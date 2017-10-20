@@ -1,0 +1,831 @@
+{
+	"AWSTemplateFormatVersion": "2010-09-09",
+	"Description": "Creates NEW VPC WITH 8 SUBNETS AND EACH SUBNET HAS IT OWN ROUTETABLE AND NAT GATEWAY ATTACHED TO IT. CREATE AN INTERNET GATEWAY AND ATTCH ITS TO VPC. ravuri96 ",
+	"Parameters": {
+
+		"VPCCIDR": {
+			"AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
+			"ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
+			"Default": "10.253.24.0/21",
+			"Description": "CIDR block for entire VPC.",
+			"Type": "String"
+		},
+		"PublicSubnet1ACIDR": {
+			"AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
+			"ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
+			"Default": "10.253.24.0/24",
+			"Description": "CIDR block for the public 1a subnet",
+			"Type": "String"
+		},
+		"PublicSubnet1BCIDR": {
+			"AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
+			"ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
+			"Default": "10.253.25.0/24",
+			"Description": "CIDR block for the public 1b subnet",
+			"Type": "String"
+		},
+		"PrivateSubnet1BCIDR": {
+			"AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
+			"ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
+			"Default": "10.253.26.0/24",
+			"Description": "CIDR block for the 1B private subnet",
+			"Type": "String"
+		},
+		"PrivateSubnet1CCIDR": {
+			"AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
+			"ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
+			"Default": "10.253.27.0/24",
+			"Description": "CIDR block for the 1C private subnet",
+			"Type": "String"
+		},
+		"PrivateSubnet1DCIDR": {
+			"AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
+			"ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
+			"Default": "10.253.28.0/24",
+			"Description": "CIDR block for the 1D private subnet",
+			"Type": "String"
+		},
+		"PrivateSubnet1ECIDR": {
+			"AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
+			"ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
+			"Default": "10.253.29.0/24",
+			"Description": "CIDR block for the 1E private subnet",
+			"Type": "String"
+		},
+		"PrivateSubnet1FCIDR": {
+			"AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
+			"ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
+			"Default": "10.253.30.0/24",
+			"Description": "CIDR block for the 1F private subnet",
+			"Type": "String"
+		},
+		"PrivateSubnet1GCIDR": {
+			"AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
+			"ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
+			"Default": "10.253.31.0/24",
+			"Description": "CIDR block for the 1G private subnet",
+			"Type": "String"
+		},
+		"SSHLocation": {
+			"AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$",
+			"ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/0-28",
+			"Default": "10.0.0.0/8",
+			"Description": "Network allowed to ssh to instances in public subnet.",
+			"Type": "String"
+
+		},
+		"Domain": {
+			"Description": "domain name of the dhcp option set",
+			"Type": "String",
+			"Default": "logisticare.com",
+			"ConstraintDescription": "Can contain only ASCII characters."
+		},
+		"DomainServers": {
+			"Description": "Name of existing domain servers",
+			"Type": "String",
+			"ConstraintDescription": "Can contain only ASCII characters."
+		},
+		"LoadBalancerCert": {
+			"Description": " arn for the load balancer cert ",
+			"Type": "String",
+			"Default": "arn:aws:acm:us-east-1:871717276700:certificate/700ff46c-df49-46d7-96a7-469d6ccafa85",
+			"ConstraintDescription": "Must be a valid ACM cert"
+		}
+
+	},
+	"Mappings": {},
+
+	"Resources": {
+		"VPC": {
+			"Type": "AWS::EC2::VPC",
+			"Properties": {
+				"EnableDnsSupport": "true",
+				"EnableDnsHostnames": "true",
+				"CidrBlock": {
+					"Ref": "VPCCIDR"
+				},
+				"Tags": [{
+					"Key": "Name",
+					"Value": "Production"
+				}]
+			}
+		},
+		"InternetGateway": {
+			"Type": "AWS::EC2::InternetGateway",
+			"Properties": {
+				"Tags": [{
+					"Key": "Name",
+					"Value": "IGW"
+				}]
+			}
+		},
+		"PublicSubnet1A": {
+			"Type": "AWS::EC2::Subnet",
+			"Properties": {
+				"VpcId": {
+					"Ref": "VPC"
+				},
+				"CidrBlock": {
+					"Ref": "PublicSubnet1ACIDR"
+				},
+				"AvailabilityZone": {
+					"Fn::Select": ["0", {
+						"Fn::GetAZs": {
+							"Ref": "AWS::Region"
+						}
+					}]
+				},
+				"Tags": [{
+					"Key": "Name",
+					"Value": "Public 1A"
+				}]
+			}
+		},
+		"PublicSubnet1B": {
+			"Type": "AWS::EC2::Subnet",
+			"Properties": {
+				"VpcId": {
+					"Ref": "VPC"
+				},
+				"CidrBlock": {
+					"Ref": "PublicSubnet1BCIDR"
+				},
+				"AvailabilityZone": {
+					"Fn::Select": ["1", {
+						"Fn::GetAZs": {
+							"Ref": "AWS::Region"
+						}
+					}]
+				},
+				"Tags": [{
+					"Key": "Name",
+					"Value": "Public 1B"
+				}]
+			}
+		},
+		"PrivateSubnet1B": {
+			"Type": "AWS::EC2::Subnet",
+			"Properties": {
+				"VpcId": {
+					"Ref": "VPC"
+				},
+				"CidrBlock": {
+					"Ref": "PrivateSubnet1BCIDR"
+				},
+				"AvailabilityZone": {
+					"Fn::Select": ["0", {
+						"Fn::GetAZs": {
+							"Ref": "AWS::Region"
+						}
+					}]
+				},
+				"Tags": [{
+					"Key": "Name",
+					"Value": "Frontend-web-1a"
+				}]
+			}
+		},
+		"Private1CSubnet": {
+			"Type": "AWS::EC2::Subnet",
+			"Properties": {
+				"VpcId": {
+					"Ref": "VPC"
+				},
+				"CidrBlock": {
+					"Ref": "PrivateSubnet1CCIDR"
+				},
+				"AvailabilityZone": {
+					"Fn::Select": ["1", {
+						"Fn::GetAZs": {
+							"Ref": "AWS::Region"
+						}
+					}]
+				},
+				"Tags": [{
+					"Key": "Name",
+					"Value": "Frontend-web-1b"
+				}]
+			}
+		},
+		"PrivateSubnet1D": {
+			"Type": "AWS::EC2::Subnet",
+			"Properties": {
+				"VpcId": {
+					"Ref": "VPC"
+				},
+				"CidrBlock": {
+					"Ref": "PrivateSubnet1DCIDR"
+				},
+				"AvailabilityZone": {
+					"Fn::Select": ["0", {
+						"Fn::GetAZs": {
+							"Ref": "AWS::Region"
+						}
+					}]
+				},
+				"Tags": [{
+					"Key": "Name",
+					"Value": "Backend-1a"
+				}]
+			}
+		},
+		"PrivateSubnet1E": {
+			"Type": "AWS::EC2::Subnet",
+			"Properties": {
+				"VpcId": {
+					"Ref": "VPC"
+				},
+				"CidrBlock": {
+					"Ref": "PrivateSubnet1ECIDR"
+				},
+				"AvailabilityZone": {
+					"Fn::Select": ["1", {
+						"Fn::GetAZs": {
+							"Ref": "AWS::Region"
+						}
+					}]
+				},
+				"Tags": [{
+					"Key": "Name",
+					"Value": "Backend-1b"
+				}]
+			}
+		},
+		"PrivateSubnet1F": {
+			"Type": "AWS::EC2::Subnet",
+			"Properties": {
+				"VpcId": {
+					"Ref": "VPC"
+				},
+				"CidrBlock": {
+					"Ref": "PrivateSubnet1FCIDR"
+				},
+				"AvailabilityZone": {
+					"Fn::Select": ["0", {
+						"Fn::GetAZs": {
+							"Ref": "AWS::Region"
+						}
+					}]
+				},
+				"Tags": [{
+					"Key": "Name",
+					"Value": "Backend-db-1a"
+				}]
+			}
+		},
+		"PrivateSubnet1G": {
+			"Type": "AWS::EC2::Subnet",
+			"Properties": {
+				"VpcId": {
+					"Ref": "VPC"
+				},
+				"CidrBlock": {
+					"Ref": "PrivateSubnet1GCIDR"
+				},
+				"AvailabilityZone": {
+					"Fn::Select": ["1", {
+						"Fn::GetAZs": {
+							"Ref": "AWS::Region"
+						}
+					}]
+				},
+				"Tags": [{
+					"Key": "Name",
+					"Value": "Backend-db-1b"
+				}]
+			}
+		},
+		"AttachGateway": {
+			"Type": "AWS::EC2::VPCGatewayAttachment",
+			"Properties": {
+				"VpcId": {
+
+					"Ref": "VPC"
+				},
+				"InternetGatewayId": {
+					"Ref": "InternetGateway"
+				}
+			}
+		},
+		"EIP1": {
+			"Type": "AWS::EC2::EIP",
+			"Properties": {
+				"Domain": "vpc"
+			}
+		},
+		"EIP2": {
+			"Type": "AWS::EC2::EIP",
+			"Properties": {
+				"Domain": "vpc"
+			}
+		},
+		"NAT1": {
+			"DependsOn": "AttachGateway",
+			"Type": "AWS::EC2::NatGateway",
+			"Properties": {
+				"AllocationId": {
+					"Fn::GetAtt": ["EIP1", "AllocationId"]
+				},
+				"SubnetId": {
+					"Ref": "PublicSubnet1A"
+				},
+				"Tags": [{
+					"Key": "Name",
+					"Value": "NAT|Public-1A"
+				}]
+			}
+		},
+		"NAT2": {
+			"DependsOn": "AttachGateway",
+			"Type": "AWS::EC2::NatGateway",
+			"Properties": {
+				"AllocationId": {
+					"Fn::GetAtt": ["EIP2", "AllocationId"]
+				},
+				"SubnetId": {
+					"Ref": "PublicSubnet1B"
+				},
+				"Tags": [{
+					"Key": "Name",
+					"Value": "NAT|Public-1B"
+				}]
+			}
+		},
+		"PublicSubnet1ARouteTable": {
+			"Type": "AWS::EC2::RouteTable",
+			"Properties": {
+				"VpcId": {
+					"Ref": "VPC"
+				},
+				"Tags": [{
+					"Key": "Name",
+					"Value": "Public-1a"
+				}]
+			}
+		},
+		"PublicRoute1A": {
+			"Type": "AWS::EC2::Route",
+			"DependsOn": "AttachGateway",
+			"Properties": {
+				"RouteTableId": {
+					"Ref": "PublicSubnet1ARouteTable"
+				},
+				"DestinationCidrBlock": "0.0.0.0/0",
+				"GatewayId": {
+					"Ref": "InternetGateway"
+				}
+			}
+		},
+		"PublicSubnet1ARouteTableAssociation": {
+			"Type": "AWS::EC2::SubnetRouteTableAssociation",
+			"Properties": {
+				"SubnetId": {
+					"Ref": "PublicSubnet1A"
+				},
+				"RouteTableId": {
+					"Ref": "PublicSubnet1ARouteTable"
+				}
+			}
+		},
+		"PublicSubnet1BRouteTable": {
+			"Type": "AWS::EC2::RouteTable",
+			"Properties": {
+				"VpcId": {
+					"Ref": "VPC"
+				},
+				"Tags": [{
+					"Key": "Name",
+					"Value": "Public-1b"
+				}]
+			}
+		},
+		"PublicRoute1B": {
+			"Type": "AWS::EC2::Route",
+			"Properties": {
+				"RouteTableId": {
+					"Ref": "PublicSubnet1BRouteTable"
+				},
+				"DestinationCidrBlock": "0.0.0.0/0",
+				"GatewayId": {
+					"Ref": "InternetGateway"
+				}
+			}
+		},
+		"PublicSubnet1BRouteTableAssociation": {
+			"Type": "AWS::EC2::SubnetRouteTableAssociation",
+			"Properties": {
+				"SubnetId": {
+					"Ref": "PublicSubnet1B"
+				},
+				"RouteTableId": {
+					"Ref": "PublicSubnet1BRouteTable"
+				}
+			}
+		},
+		"PrivateSubnet1BRouteTable": {
+			"Type": "AWS::EC2::RouteTable",
+			"Properties": {
+				"VpcId": {
+					"Ref": "VPC"
+				},
+				"Tags": [{
+					"Key": "Name",
+					"Value": "Frontend-web-1a"
+				}]
+			}
+		},
+		"PrivateSubnet1BRoute": {
+			"Type": "AWS::EC2::Route",
+			"Properties": {
+				"RouteTableId": {
+					"Ref": "PrivateSubnet1BRouteTable"
+				},
+				"DestinationCidrBlock": "0.0.0.0/0",
+				"NatGatewayId": {
+					"Ref": "NAT1"
+				}
+			}
+		},
+		"PrivateSubnet1BRouteTableAssociation": {
+			"Type": "AWS::EC2::SubnetRouteTableAssociation",
+			"Properties": {
+				"SubnetId": {
+					"Ref": "PrivateSubnet1B"
+				},
+				"RouteTableId": {
+					"Ref": "PrivateSubnet1BRouteTable"
+				}
+			}
+		},
+
+		"PrivateSubnet1CRouteTable": {
+			"Type": "AWS::EC2::RouteTable",
+			"Properties": {
+				"VpcId": {
+					"Ref": "VPC"
+				},
+				"Tags": [{
+					"Key": "Name",
+					"Value": "Frontend-web-1b"
+				}]
+			}
+		},
+		"PrivateSubnet1CRoute": {
+			"Type": "AWS::EC2::Route",
+			"Properties": {
+				"RouteTableId": {
+					"Ref": "PrivateSubnet1CRouteTable"
+				},
+				"DestinationCidrBlock": "0.0.0.0/0",
+				"NatGatewayId": {
+					"Ref": "NAT2"
+				}
+			}
+		},
+		"PrivateSubnet1CRouteTableAssociation": {
+			"Type": "AWS::EC2::SubnetRouteTableAssociation",
+			"Properties": {
+				"SubnetId": {
+					"Ref": "Private1CSubnet"
+				},
+				"RouteTableId": {
+					"Ref": "PrivateSubnet1CRouteTable"
+				}
+			}
+		},
+		"PrivateSubnet1DRouteTable": {
+			"Type": "AWS::EC2::RouteTable",
+			"Properties": {
+				"VpcId": {
+					"Ref": "VPC"
+				},
+				"Tags": [{
+					"Key": "Name",
+					"Value": "Backend-1a"
+				}]
+			}
+		},
+		"PrivateSubnet1DRoute": {
+			"Type": "AWS::EC2::Route",
+			"Properties": {
+				"RouteTableId": {
+					"Ref": "PrivateSubnet1DRouteTable"
+				},
+				"DestinationCidrBlock": "0.0.0.0/0",
+				"NatGatewayId": {
+					"Ref": "NAT1"
+				}
+			}
+		},
+		"PrivateSubnet1DRouteTableAssociation": {
+			"Type": "AWS::EC2::SubnetRouteTableAssociation",
+			"Properties": {
+				"SubnetId": {
+					"Ref": "PrivateSubnet1D"
+				},
+				"RouteTableId": {
+					"Ref": "PrivateSubnet1DRouteTable"
+				}
+			}
+		},
+		"PrivateSubnet1ERouteTable": {
+			"Type": "AWS::EC2::RouteTable",
+			"Properties": {
+				"VpcId": {
+					"Ref": "VPC"
+				},
+				"Tags": [{
+						"Key": "Name",
+						"Value": "Backend-1b"
+					},
+					{
+						"Key": "CloudFormationStack",
+						"Value": {
+							"Ref": "AWS::StackId"
+						}
+					}
+				]
+			}
+		},
+		"PrivateSubnet1ERoute": {
+			"Type": "AWS::EC2::Route",
+			"Properties": {
+				"RouteTableId": {
+					"Ref": "PrivateSubnet1ERouteTable"
+				},
+				"DestinationCidrBlock": "0.0.0.0/0",
+				"NatGatewayId": {
+					"Ref": "NAT2"
+				}
+			}
+		},
+		"PrivateSubnet1ERouteTableAssociation": {
+			"Type": "AWS::EC2::SubnetRouteTableAssociation",
+			"Properties": {
+				"SubnetId": {
+					"Ref": "PrivateSubnet1E"
+				},
+				"RouteTableId": {
+					"Ref": "PrivateSubnet1ERouteTable"
+				}
+			}
+		},
+		"PrivateSubnet1FRouteTable": {
+			"Type": "AWS::EC2::RouteTable",
+			"Properties": {
+				"VpcId": {
+					"Ref": "VPC"
+				},
+				"Tags": [{
+					"Key": "Name",
+					"Value": "Backend-db-1a"
+				}]
+			}
+		},
+		"PrivateSubnet1FRoute": {
+			"Type": "AWS::EC2::Route",
+			"Properties": {
+				"RouteTableId": {
+					"Ref": "PrivateSubnet1FRouteTable"
+				},
+				"DestinationCidrBlock": "0.0.0.0/0",
+				"NatGatewayId": {
+					"Ref": "NAT1"
+				}
+			}
+		},
+		"PrivateSubnet1FRouteTableAssociation": {
+			"Type": "AWS::EC2::SubnetRouteTableAssociation",
+			"Properties": {
+				"SubnetId": {
+					"Ref": "PrivateSubnet1F"
+				},
+				"RouteTableId": {
+					"Ref": "PrivateSubnet1FRouteTable"
+				}
+			}
+		},
+		"PrivateSubnet1GRouteTable": {
+			"Type": "AWS::EC2::RouteTable",
+			"Properties": {
+				"VpcId": {
+					"Ref": "VPC"
+				},
+				"Tags": [{
+					"Key": "Name",
+					"Value": "Backend-db-1b"
+				}]
+			}
+		},
+		"PrivateSubnet1GRoute": {
+			"Type": "AWS::EC2::Route",
+			"Properties": {
+				"RouteTableId": {
+					"Ref": "PrivateSubnet1GRouteTable"
+				},
+				"DestinationCidrBlock": "0.0.0.0/0",
+				"NatGatewayId": {
+					"Ref": "NAT2"
+				}
+			}
+		},
+		"PrivateSubnet1GRouteTableAssociation": {
+			"Type": "AWS::EC2::SubnetRouteTableAssociation",
+			"Properties": {
+				"SubnetId": {
+					"Ref": "PrivateSubnet1G"
+				},
+				"RouteTableId": {
+					"Ref": "PrivateSubnet1GRouteTable"
+				}
+			}
+		},
+		"frontendelbSecurityGroup": {
+			"Type": "AWS::EC2::SecurityGroup",
+			"Properties": {
+				"GroupDescription": "Enable HTTPS access via port 443",
+				"SecurityGroupIngress": [{
+					"IpProtocol": "tcp",
+					"FromPort": "443",
+					"ToPort": "443",
+					"CidrIp": "0.0.0.0/0"
+				}],
+				"VpcId": {
+					"Ref": "VPC"
+				}
+			}
+		},
+		"Dhcp": {
+			"Type": "AWS::EC2::DHCPOptions",
+			"Properties": {
+				"Tags": [{
+					"Key": "Name",
+					"Value": "Dhcp"
+				}],
+				"DomainName": {
+					"Ref": "Domain"
+				},
+				"DomainNameServers": [{
+					"Ref": "DomainServers"
+				}]
+			}
+		},
+		"DHCPassociation": {
+			"Type": "AWS::EC2::VPCDHCPOptionsAssociation",
+			"DependsOn": ["Dhcp"],
+			"Properties": {
+				"VpcId": {
+					"Ref": "VPC"
+				},
+				"DhcpOptionsId": {
+					"Ref": "Dhcp"
+				}
+			}
+		},
+
+		"frontendLoadBalancer": {
+			"Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+			"Properties": {
+				"CrossZone": "true",
+				"LoadBalancerName": "prod-frontend",
+				"SecurityGroups": [{
+					"Fn::GetAtt": ["frontendelbSecurityGroup", "GroupId"]
+				}],
+				"Subnets": [{
+						"Ref": "PrivateSubnet1B"
+					},
+					{
+						"Ref": "Private1CSubnet"
+					}
+				],
+				"LBCookieStickinessPolicy": [{
+					"PolicyName": "CookieBasedPolicy",
+					"CookieExpirationPeriod": "30"
+				}],
+				"Scheme": "internal",
+				"Listeners": [{
+					"LoadBalancerPort": "443",
+					"InstancePort": "8443",
+					"Protocol": "HTTPS",
+					"PolicyNames": ["CookieBasedPolicy"],
+					"SSLCertificateId": {
+						"Ref": "LoadBalancerCert"
+					}
+				}],
+				"HealthCheck": {
+					"Target": "HTTP:8443/index.html",
+					"HealthyThreshold": "2",
+					"UnhealthyThreshold": "5",
+					"Interval": "10",
+					"Timeout": "5"
+				}
+			}
+		},
+		"backendelbSecurityGroup": {
+			"Type": "AWS::EC2::SecurityGroup",
+			"Properties": {
+				"GroupDescription": "Enable HTTPS access via port 443",
+				"SecurityGroupIngress": [{
+					"IpProtocol": "tcp",
+					"FromPort": "443",
+					"ToPort": "443",
+					"CidrIp": "0.0.0.0/0"
+				}],
+				"VpcId": {
+					"Ref": "VPC"
+				}
+			}
+		},
+		"backendLoadBalancer": {
+			"Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+			"Properties": {
+				"CrossZone": "true",
+				"LoadBalancerName": "prod-backend",
+				"SecurityGroups": [{
+					"Fn::GetAtt": ["backendelbSecurityGroup", "GroupId"]
+				}],
+				"Subnets": [{
+						"Ref": "PrivateSubnet1D"
+					},
+					{
+						"Ref": "PrivateSubnet1E"
+					}
+				],
+				"LBCookieStickinessPolicy": [{
+					"PolicyName": "CookieBasedPolicy",
+					"CookieExpirationPeriod": "30"
+				}],
+				"Scheme": "internal",
+				"Listeners": [{
+					"LoadBalancerPort": "443",
+					"InstancePort": "8443",
+					"Protocol": "HTTPS",
+					"PolicyNames": ["CookieBasedPolicy"],
+					"SSLCertificateId": {
+						"Ref": "LoadBalancerCert"
+					}
+				}],
+				"HealthCheck": {
+					"Target": "HTTP:8443/index.html",
+					"HealthyThreshold": "2",
+					"UnhealthyThreshold": "5",
+					"Interval": "10",
+					"Timeout": "5"
+				}
+			}
+		},
+		"ApielbSecurityGroup": {
+			"Type": "AWS::EC2::SecurityGroup",
+			"Properties": {
+				"GroupDescription": "Enable HTTPS access via port 443",
+				"SecurityGroupIngress": [{
+					"IpProtocol": "tcp",
+					"FromPort": "443",
+					"ToPort": "443",
+					"CidrIp": "0.0.0.0/0"
+				}],
+				"VpcId": {
+					"Ref": "VPC"
+				}
+			}
+		},
+		"ApigatewayLoadBalancer": {
+			"Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+			"Properties": {
+				"CrossZone": "true",
+				"LoadBalancerName": "prod-apigateway",
+				"SecurityGroups": [{
+					"Fn::GetAtt": ["ApielbSecurityGroup", "GroupId"]
+				}],
+				"Subnets": [{
+						"Ref": "PrivateSubnet1D"
+					},
+					{
+						"Ref": "PrivateSubnet1E"
+					}
+				],
+				"LBCookieStickinessPolicy": [{
+					"PolicyName": "CookieBasedPolicy",
+					"CookieExpirationPeriod": "30"
+				}],
+				"Scheme": "internal",
+				"Listeners": [{
+					"LoadBalancerPort": "443",
+					"InstancePort": "8443",
+					"Protocol": "HTTPS",
+					"PolicyNames": ["CookieBasedPolicy"],
+					"SSLCertificateId": {
+						"Ref": "LoadBalancerCert"
+					}
+				}],
+				"HealthCheck": {
+					"Target": "HTTP:8443/index.html",
+					"HealthyThreshold": "2",
+					"UnhealthyThreshold": "5",
+					"Interval": "10",
+					"Timeout": "5"
+				}
+			}
+		}
+	}
+}
