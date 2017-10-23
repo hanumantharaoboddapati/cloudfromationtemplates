@@ -826,6 +826,61 @@
 					"Timeout": "5"
 				}
 			}
+		},
+		"newSecurityGroup": {
+			"Type": "AWS::EC2::SecurityGroup",
+			"Properties": {
+				"GroupDescription": "Enable HTTPS access via port 443",
+				"SecurityGroupIngress": [{
+					"IpProtocol": "tcp",
+					"FromPort": "443",
+					"ToPort": "443",
+					"CidrIp": "0.0.0.0/0"
+				}],
+				"VpcId": {
+					"Ref": "VPC"
+				}
+			}
+		},
+		"newLoadBalancer": {
+			"Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+			"Properties": {
+				"CrossZone": "true",
+				"LoadBalancerName": "prod-new",
+				"SecurityGroups": [{
+					"Fn::GetAtt": ["newSecurityGroup", "GroupId"]
+				}],
+				"Subnets": [{
+						"Ref": "PrivateSubnet1D"
+					},
+					{
+						"Ref": "PrivateSubnet1E"
+					}
+				],
+				"LBCookieStickinessPolicy": [{
+					"PolicyName": "CookieBasedPolicy",
+					"CookieExpirationPeriod": "30"
+				}],
+				"Scheme": "internal",
+				"Listeners": [{
+					"LoadBalancerPort": "443",
+					"InstancePort": "8443",
+					"Protocol": "HTTPS",
+					"PolicyNames": ["CookieBasedPolicy"],
+					"SSLCertificateId": {
+						"Ref": "LoadBalancerCert"
+					}
+				}],
+				"HealthCheck": {
+					"Target": "HTTP:8443/index.html",
+					"HealthyThreshold": "2",
+					"UnhealthyThreshold": "5",
+					"Interval": "10",
+					"Timeout": "5"
+				}
+			}
 		}
+		
 	}
+
 }
